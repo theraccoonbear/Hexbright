@@ -34,11 +34,11 @@ boolean btnDown = false;
 
 byte dynMode = 0;
 
-byte cycle[] = {
+byte pulse_cycle[] = {
   1,2,3,3,2,1,0,4
 };
 
-byte pulse_cycle[] = {
+byte slow_pulse_cycle[] = {
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,
   2,2,2,2,2,2,2,2,2,2,2,2,2,2,
   3,3,3,3,3,3,3,3,3,3,3,3,3,3,
@@ -49,7 +49,7 @@ byte pulse_cycle[] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
 
-byte strobe_cycle[] = {
+byte dazzle_cycle[] = {
   3,3,0,2,2,0,1,1,
   0,0,0,
   1,1,0,2,2,0,3,3,
@@ -141,10 +141,10 @@ void strobe() {
   //Serial.println("Mode = strobe");
   //for (int i = 0; i < sizeof(cycle); i++) {
 
-  dynMode = cycle[cycleIdx];
+  dynMode = dazzle_cycle[cycleIdx];
   setMode();
   cycleIdx++;
-  if (cycleIdx > sizeof(cycle)) { cycleIdx = 1; }
+  if (cycleIdx > sizeof(dazzle_cycle)) { cycleIdx = 1; }
 
   //}
 }
