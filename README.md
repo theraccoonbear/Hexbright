@@ -1,3 +1,8 @@
+Changes from the original hexbright/samples
+-------------------------------------------
+I've simply merged my ~/sketchbook/ directory into the project.
+
+
 HexBright Demo Code 
 =======================
 
