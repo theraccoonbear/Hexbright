@@ -138,17 +138,10 @@ void setMode() {
 }
 
 void strobe() {
-  //Serial.println("Mode = strobe");
-  //for (int i = 0; i < sizeof(cycle); i++) {
-
   dynMode = dazzle_cycle[cycleIdx];
   setMode();
   cycleIdx++;
   if (cycleIdx >= sizeof(dazzle_cycle)) { cycleIdx = 0; }
-  Serial.println(cycleIdx);
-  Serial.println(sizeof(dazzle_cycle));
-
-  //}
 }
 
 void loop()
