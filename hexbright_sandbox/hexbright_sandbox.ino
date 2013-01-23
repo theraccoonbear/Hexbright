@@ -76,6 +76,7 @@ byte dazzle_cycle[] = {
   0,0,0
 };
 
+
 byte cycleIdx= 0;
 
 void setup()
@@ -172,8 +173,8 @@ void loop()
   {
     lastTempTime = time;
     int temperature = analogRead(APIN_TEMP);
-    //Serial.print("Temp: ");
-    //Serial.println(temperature);
+    Serial.print("Temp: ");
+    Serial.println(temperature);
     if (temperature > OVERTEMP && mode != MODE_OFF)
     {
       Serial.println("Overheating!");
