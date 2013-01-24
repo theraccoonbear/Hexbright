@@ -105,31 +105,31 @@ void setup()
   Serial.println("Powered up!");
 }
 
-void setMode() {
-  switch (dynMode) {
+void setMode(int mode) {
+  switch (mode) {
     case MODE_OFF:
-      //Serial.println("Mode = off");
+      Serial.println("Mode = off");
       pinMode(DPIN_PWR, OUTPUT);
       digitalWrite(DPIN_PWR, LOW);
       digitalWrite(DPIN_DRV_MODE, LOW);
       digitalWrite(DPIN_DRV_EN, LOW);
       break;
     case MODE_LOW:
-      //Serial.println("Mode = low");
+      Serial.println("Mode = low");
       pinMode(DPIN_PWR, OUTPUT);
       digitalWrite(DPIN_PWR, HIGH);
       digitalWrite(DPIN_DRV_MODE, LOW);
       analogWrite(DPIN_DRV_EN, 64);
       break;
     case MODE_MED:
-      //Serial.println("Mode = medium");
+      Serial.println("Mode = medium");
       pinMode(DPIN_PWR, OUTPUT);
       digitalWrite(DPIN_PWR, HIGH);
       digitalWrite(DPIN_DRV_MODE, LOW);
       analogWrite(DPIN_DRV_EN, 255);
       break;
     case MODE_HIGH:
-      //Serial.println("Mode = high");
+      Serial.println("Mode = high");
       pinMode(DPIN_PWR, OUTPUT);
       digitalWrite(DPIN_PWR, HIGH);
       digitalWrite(DPIN_DRV_MODE, HIGH);
@@ -142,8 +142,8 @@ void setMode() {
 }
 
 void strobe() {
-  dynMode = dazzle_cycle[cycleIdx];
-  setMode();
+//  dynMode = dazzle_cycle[cycleIdx];
+  setMode(dazzle_cycle[cycleIdx]);
   cycleIdx++;
   if (cycleIdx >= sizeof(dazzle_cycle)) { cycleIdx = 0; }
 }
