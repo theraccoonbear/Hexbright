@@ -82,7 +82,7 @@ void setup()
   digitalWrite(DPIN_DRV_EN,   LOW);
   digitalWrite(DPIN_GLED, HIGH);
   
-  pulseLength = 250;
+  pulseLength = MIN_PULSE_MS;
   
   btnState = BUTTON_UP;
   
@@ -142,6 +142,7 @@ void pulse() {
     if (pulseChange < 0 && pulseLength <= MIN_PULSE_MS) {
       pulseChange = 50;
     }
+    
     pulseLength += pulseChange;
     // Serial.print("New Pulse Length: ");
     // Serial.println(pulseLength);
@@ -200,29 +201,31 @@ void loop() {
   //////////
   switch (mode) {
     case MODE_OFF:
-      if (btnDown && !newBtnDown && clickLength(50, 10000)) {
+      if (btnDown && !newBtnDown && clickLength(50, 250)) {
         mode = MODE_LOW;
         lightOn(85); 
         // Serial.println("Mode: LOW");
       }
       break;
     case MODE_LOW:
-      if (btnDown && !newBtnDown && clickLength(50, 10000)) {
+      lightOn(85);
+      if (btnDown && !newBtnDown && clickLength(50, 250)) {
         mode = MODE_MED;
         lightOn(170);       
         // Serial.println("Mode: MEDIUM");
       }
       break;
     case MODE_MED:
-      if (btnDown && !newBtnDown && clickLength(50, 10000)) {
+      lightOn(170);
+      if (btnDown && !newBtnDown && clickLength(50, 250)) {
         mode = MODE_HIGH;
         lightOn(255);
         // Serial.println("Mode: HIGH");
       }
       break;
     case MODE_HIGH:
-
-      if (btnDown && !newBtnDown) {
+      lightOn(255);
+      if (btnDown && !newBtnDown && clickLength(50, 250)) {
         if (clickLength(50, 250)) {
           // Serial.println("Mode: PULSE");
           mode = MODE_PULSAR;
