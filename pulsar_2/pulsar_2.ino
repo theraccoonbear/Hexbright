@@ -16,15 +16,13 @@
 #define DPIN_PWR                8
 #define DPIN_DRV_MODE           9
 #define DPIN_DRV_EN             10
+
 // Modes
 #define MODE_OFF                0
-//#define MODE_FADE               1
-//#define MODE_ON                 2
 #define MODE_LOW                1
 #define MODE_MED                2
 #define MODE_HIGH               3
 #define MODE_PULSAR             4
-
 
 // States
 #define STATE_OFF               0
@@ -42,21 +40,10 @@
 byte btnState;
 
 byte mode;
-boolean btnDown;
+byte newMode;
+boolean btnDown = false;
 unsigned long lastTime, btnTime;
-int bright, fadeDir;
 
-byte delay_time = 20;
-
-int curChange;
-int changeDir;
-
-int startValue;
-int curValue;
-int endValue;
-int change;
-int waitTicks;
-int ticks;
 byte state;
 
 int holdLength;
@@ -87,11 +74,9 @@ void setup()
   btnState = BUTTON_UP;
   
   // Initialize serial busses
-  // Serial.begin(9600);
+  Serial.begin(9600);
   Wire.begin();
-  // Serial.println("Ready.");
-  curChange = -20;
-  changeDir = 1;
+  Serial.println("Ready.");
   
   mode = MODE_OFF;
   btnDown = digitalRead(DPIN_RLED_SW);
@@ -131,8 +116,6 @@ int getPulseLength() {
 void pulse() {
   time = millis();
   int stateElap = time - stateBegan;
-  float diff = startValue - endValue;
-  float perComplete;
   
   if (time - lastTime > 100 && newBtnDown) {
     lastTime = time;
@@ -144,8 +127,6 @@ void pulse() {
     }
     
     pulseLength += pulseChange;
-    // Serial.print("New Pulse Length: ");
-    // Serial.println(pulseLength);
   }
   
 
@@ -196,59 +177,77 @@ int upFor() {
 void loop() {
   time = millis();
   newBtnDown = digitalRead(DPIN_RLED_SW);
-  
 
-  //////////
+  
+  // Periodically pull down the button's pin, since
+  // in certain hardware revisions it can float.
+  pinMode(DPIN_RLED_SW, OUTPUT);
+  pinMode(DPIN_RLED_SW, INPUT);
+
+  // Do mode thing
+  switch (mode) {
+    case MODE_PULSAR:
+      pulse(); 
+      break;
+  }
+
+  ////////////////////
+  // Set mode
   switch (mode) {
     case MODE_OFF:
       if (btnDown && !newBtnDown && clickLength(50, 250)) {
-        mode = MODE_LOW;
-        lightOn(85); 
-        // Serial.println("Mode: LOW");
+        newMode = MODE_LOW;
+        Serial.println("Mode: LOW");
       }
       break;
     case MODE_LOW:
-      lightOn(85);
       if (btnDown && !newBtnDown && clickLength(50, 250)) {
-        mode = MODE_MED;
-        lightOn(170);       
-        // Serial.println("Mode: MEDIUM");
+        newMode = MODE_MED;
+        Serial.println("Mode: MEDIUM");
       }
       break;
     case MODE_MED:
-      lightOn(170);
       if (btnDown && !newBtnDown && clickLength(50, 250)) {
-        mode = MODE_HIGH;
-        lightOn(255);
-        // Serial.println("Mode: HIGH");
+        newMode = MODE_HIGH;
+        Serial.println("Mode: HIGH");
       }
       break;
     case MODE_HIGH:
-      lightOn(255);
       if (btnDown && !newBtnDown && clickLength(50, 250)) {
-        if (clickLength(50, 250)) {
-          // Serial.println("Mode: PULSE");
-          mode = MODE_PULSAR;
-          initPulse();
-        } else {
-          // Serial.print("last: ");
-          // Serial.print(btnDown ? 'DOWN' : 'UP');
-          // Serial.print(", now: ");
-          // Serial.print(newBtnDown ? 'DOWN' : 'UP');
-          // Serial.print(", len: ");
-          // Serial.println(lastHold());
-        }
+        Serial.println("Mode: PULSE");
+        newMode = MODE_PULSAR;
       }
       break;
     case MODE_PULSAR:
-      pulse();
       if (btnDown && !newBtnDown && clickLength(50, 250)) {
-        // Serial.println("Mode: OFF");
-        mode = MODE_OFF;
-        lightOff();
+        Serial.println("Mode: OFF");
+        newMode = MODE_OFF;
       }
       break;
   }
+  
+  /////////////////////////
+  if (mode != newMode) {
+    switch (newMode) {
+      case MODE_OFF:
+        lightOff();
+        break;
+      case MODE_LOW:
+        lightOn(85);
+        break;
+      case MODE_MED:
+        lightOn(170);
+        break;
+      case MODE_HIGH:
+        lightOn(255);
+        break;
+      case MODE_PULSAR:
+        initPulse();
+        break;
+    }
+    mode = newMode;
+  } // mode != newMode?
+  /////////////////////////
   
   if (newBtnDown != btnDown) {
     if (newBtnDown) {
@@ -264,7 +263,7 @@ void loop() {
     
     btnTime = time;
     btnDown = newBtnDown;
-    delay(50);
+//    delay(50);
   }
 }
 
