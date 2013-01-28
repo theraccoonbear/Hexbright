@@ -92,6 +92,8 @@ void lightOff() {
 void lightOn(int val) {
   pinMode(DPIN_PWR,      OUTPUT);
   unsigned int gamma = (val*val)>>8;
+  pinMode(DPIN_PWR, OUTPUT);
+  digitalWrite(DPIN_PWR, HIGH);
   analogWrite(DPIN_DRV_EN, gamma); 
 }
 
@@ -181,8 +183,8 @@ void loop() {
   
   // Periodically pull down the button's pin, since
   // in certain hardware revisions it can float.
-  pinMode(DPIN_RLED_SW, OUTPUT);
-  pinMode(DPIN_RLED_SW, INPUT);
+//  pinMode(DPIN_RLED_SW, OUTPUT);
+//  pinMode(DPIN_RLED_SW, INPUT);
 
   // Do mode thing
   switch (mode) {
