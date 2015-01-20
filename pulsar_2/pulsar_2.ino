@@ -43,6 +43,7 @@ byte mode;
 byte newMode;
 boolean btnDown = false;
 unsigned long lastTime, btnTime;
+unsigned long enteredMode, modeDur;
 
 byte state;
 
@@ -79,6 +80,7 @@ void setup()
   Serial.println("Ready.");
   
   mode = MODE_OFF;
+  enteredMode = millis();
   btnDown = digitalRead(DPIN_RLED_SW);
   btnTime = millis();
 }
@@ -178,6 +180,7 @@ int upFor() {
 
 void loop() {
   time = millis();
+  modeDur = time - enteredMode;
   newBtnDown = digitalRead(DPIN_RLED_SW);
 
   
@@ -198,38 +201,39 @@ void loop() {
   switch (mode) {
     case MODE_OFF:
       if (btnDown && !newBtnDown && clickLength(50, 250)) {
-        newMode = MODE_LOW;
+        newMode = modeDur > 1000 ? MODE_OFF : MODE_LOW;
         Serial.println("Mode: LOW");
       }
       break;
     case MODE_LOW:
       if (btnDown && !newBtnDown && clickLength(50, 250)) {
-        newMode = MODE_MED;
+        newMode = modeDur > 1000 ? MODE_OFF : MODE_MED;
         Serial.println("Mode: MEDIUM");
       }
       break;
     case MODE_MED:
       if (btnDown && !newBtnDown && clickLength(50, 250)) {
-        newMode = MODE_HIGH;
+        newMode = modeDur > 1000 ? MODE_OFF : MODE_HIGH;
         Serial.println("Mode: HIGH");
       }
       break;
     case MODE_HIGH:
       if (btnDown && !newBtnDown && clickLength(50, 250)) {
+        newMode = modeDur > 1000 ? MODE_OFF : MODE_PULSAR;
         Serial.println("Mode: PULSE");
-        newMode = MODE_PULSAR;
       }
       break;
     case MODE_PULSAR:
       if (btnDown && !newBtnDown && clickLength(50, 250)) {
-        Serial.println("Mode: OFF");
         newMode = MODE_OFF;
+        Serial.println("Mode: OFF");
       }
       break;
   }
   
   /////////////////////////
   if (mode != newMode) {
+    
     switch (newMode) {
       case MODE_OFF:
         lightOff();
@@ -247,6 +251,8 @@ void loop() {
         initPulse();
         break;
     }
+    enteredMode = millis();
+    
     mode = newMode;
   } // mode != newMode?
   /////////////////////////
